@@ -5,12 +5,12 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -21,6 +21,8 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -133,18 +135,33 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             protected void onPostExecute(String result){
-                String s = result.trim();
                 loadingDialog.dismiss();
-                /*if(s.equalsIgnoreCase("success")){
-                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                    intent.putExtra(USER_EMAIL, email);
+                JSONObject jsonObj = null;
+                JSONObject token = null;
+                Boolean error = null;
+                loadingDialog.dismiss();
+
+                try {
+                    jsonObj = new JSONObject(result);
+                    error = jsonObj.getBoolean("error");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                TextView resultText = (TextView) findViewById(R.id.response_text);
+
+                if (error) try {
+                    resultText.setText(jsonObj.getString("message"));
+                    Toast.makeText(getBaseContext(), jsonObj.getString("message"), Toast.LENGTH_LONG).show();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                else {
+                    Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+                    Toast.makeText(getBaseContext(), "Registrations Successful", Toast.LENGTH_LONG).show();
                     finish();
                     startActivity(intent);
-                }else {
-                    Toast.makeText(getApplicationContext(), "Invalid User email or Password", Toast.LENGTH_LONG).show();
-                }*/
-                TextView resultText = (TextView) findViewById(R.id.response_text);
-                resultText.setText(s);
+                }
             }
         }
 

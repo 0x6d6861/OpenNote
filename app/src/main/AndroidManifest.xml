@@ -15,7 +15,8 @@
         <activity android:name=".MainActivity"></activity>
         <activity
             android:name=".LoginActivity"
-            android:label="Login">
+            android:label="Login"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,7 +28,9 @@
             android:label="Register"
             android:parentActivityName=".LoginActivity"></activity>
         <activity android:name=".ServerSetActivity"
-            android:parentActivityName=".LoginActivity"></activity>
+            android:label="Server Settings"
+            android:parentActivityName=".LoginActivity"
+            android:theme="@style/Theme.AppCompat.Light.Dialog"></activity>
     </application>
 
 </manifest>

@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -54,6 +55,10 @@ public class LoginActivity extends AppCompatActivity {
             String ip_set = prefs.getString("ip", "No name defined");//"No name defined" is the default value.
             int port_set = prefs.getInt("port", 9292); //0 is the default value.
             SERVER_ADDRESS = ip_set + ":" + Integer.toString(port_set);
+            if (prefs.getString("token", null) != null) {
+                // IMPORTANT: This line is verydangerous
+                login(prefs.getString("email", null), prefs.getString("token", null));
+            }
         }else{
             startActivity(new Intent(LoginActivity.this, ServerSetActivity.class));
         }
@@ -159,6 +164,8 @@ public class LoginActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+
                 return result;
             }
 
@@ -166,32 +173,41 @@ public class LoginActivity extends AppCompatActivity {
             protected void onPostExecute(String result){
                 JSONObject jsonObj = null;
                 JSONObject token = null;
-                Boolean error = true;
-
-//                String s = result.trim();
-                String s = result;
+                Boolean error = null;
                 loadingDialog.dismiss();
 
                 try {
-                    jsonObj = new JSONObject(s);
-                    token  = jsonObj.getJSONObject("_token");
+                    jsonObj = new JSONObject(result);
                     error = jsonObj.getBoolean("error");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
+                TextView resultText = (TextView) findViewById(R.id.response_text);
+//                resultText.setText(error.toString());
 
-                /*if(!error){
+
+                if (error) try {
+                    resultText.setText(jsonObj.getString("message"));
+                    Toast.makeText(getBaseContext(), jsonObj.getString("message"), Toast.LENGTH_LONG).show();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                else {
+                    try {
+                        token = jsonObj.getJSONObject("_token");
+                        SharedPreferences.Editor editor = getSharedPreferences("open_settings", MODE_PRIVATE).edit();
+                        editor.putString("token", token.getString("token"));
+                        editor.putString("email", token.getString("email"));
+                        editor.commit();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                    intent.putExtra(USER_TOKEN, (Parcelable) token);
+                    intent.putExtra(USER_TOKEN, token.toString());
                     finish();
                     startActivity(intent);
-                }else {
-                    Toast.makeText(getApplicationContext(), "Invalid User email or Password", Toast.LENGTH_LONG).show();
-                }*/
-
-                TextView resultText = (TextView) findViewById(R.id.response_text);
-                resultText.setText( error.toString());
+                }
 
             }
         }
