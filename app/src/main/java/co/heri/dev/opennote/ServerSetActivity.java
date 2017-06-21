@@ -1,8 +1,8 @@
 package co.heri.dev.opennote;
 
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,6 +29,13 @@ public class ServerSetActivity extends AppCompatActivity {
             port.setText( Integer.toString(port_set));
 
         }
+
+        findViewById(R.id.cancel_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         save_btn.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -49,6 +49,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        email_EditText = (EditText) findViewById(R.id.email_edit);
+        password_EditText = (EditText) findViewById(R.id.pass_edit);
+
+
+
+
         SharedPreferences prefs = getSharedPreferences("open_settings", MODE_PRIVATE);
         String restoredSetting = prefs.getString("ip", null);
         if (restoredSetting != null) {
@@ -57,15 +63,13 @@ public class LoginActivity extends AppCompatActivity {
             SERVER_ADDRESS = ip_set + ":" + Integer.toString(port_set);
             if (prefs.getString("token", null) != null) {
                 // IMPORTANT: This line is verydangerous
-                login(prefs.getString("email", null), prefs.getString("token", null));
+                login(prefs.getString("email", null), prefs.getString("token", null), "true");
             }
         }else{
             startActivity(new Intent(LoginActivity.this, ServerSetActivity.class));
         }
 
 
-        email_EditText = (EditText) findViewById(R.id.email_edit);
-        password_EditText = (EditText) findViewById(R.id.pass_edit);
 
 
         findViewById(R.id.register_link).setOnClickListener(new View.OnClickListener() {
@@ -83,7 +87,7 @@ public class LoginActivity extends AppCompatActivity {
                 email = email_EditText.getText().toString();
                 password = password_EditText.getText().toString();
 
-                login(email,password);
+                login(email, password, "false");
             }
         });
 
@@ -109,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    private void login(final String email, String password) {
+    private void login(final String email, String password, String token) {
 
 
         class LoginAsync extends AsyncTask<String, Void, String> {
@@ -127,11 +131,17 @@ public class LoginActivity extends AppCompatActivity {
             protected String doInBackground(String... params) {
                 String uemail = params[0];
                 String pass = params[1];
+                Boolean token = Boolean.valueOf(params[2]);
 
                 InputStream is = null;
                 List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
                 nameValuePairs.add(new BasicNameValuePair("email", uemail));
-                nameValuePairs.add(new BasicNameValuePair("password", pass));
+                if (token) {
+                    nameValuePairs.add(new BasicNameValuePair("token", pass));
+                } else {
+                    nameValuePairs.add(new BasicNameValuePair("password", pass));
+                }
+
                 String result = null;
 
                 try{
@@ -214,7 +224,7 @@ public class LoginActivity extends AppCompatActivity {
 
         LoginAsync la = new LoginAsync();
 
-        la.execute(email, password);
+        la.execute(email, password, token);
 
     }
 
