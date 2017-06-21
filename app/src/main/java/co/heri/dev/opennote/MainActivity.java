@@ -1,12 +1,14 @@
 package co.heri.dev.opennote;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -49,12 +51,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         // TODO: Read shared toekn and email from shared perefence.
-        /*Intent intent = getIntent();
+        Intent intent = getIntent();
         String ueamil = intent.getStringExtra(LoginActivity.USER_TOKEN);
 
         TextView textView = (TextView) findViewById(R.id.hello_message);
 
-        textView.setText("Token Details: " + ueamil);*/
+        textView.setText("Token Details: " + ueamil);
 
 
         task_ListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -69,9 +71,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void prepareTaskData() {
-        // load the tasks
-    }
 }
 
 class StableArrayAdapter extends ArrayAdapter<String> {
